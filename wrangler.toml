@@ -1,0 +1,16 @@
+name = "charni-pos-v2"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-06-11"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "charnipos-v2-db"
+database_id = "00000000-0000-0000-0000-000000000000" # replace after: wrangler d1 create charnipos-v2-db
+
+[[r2_buckets]]
+binding = "IMAGES_BUCKET"
+bucket_name = "charnipos-v2-images"
+
+[vars]
+R2_PUBLIC_URL = ""
+GOOGLE_CLIENT_ID = ""
