@@ -37,3 +37,11 @@ dev:
 
 deploy:
 	pnpm deploy
+
+seed-users:
+	pnpm install
+	npx tsx seed/seed-users.ts
+	
+remote-seed-users:
+	pnpm install
+	npx tsx seed/seed-users.ts --remote
