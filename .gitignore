@@ -4,3 +4,4 @@ dist/
 .env.local
 *.local
 .pnpm-store/
+.wrangler/
