@@ -57,3 +57,11 @@ remote-seed-shop:
 seed-shops: seed-shop
 
 remote-seed-shops: remote-seed-shop
+
+seed-products:
+	pnpm install
+	npx tsx seed/seed-products.ts
+
+remote-seed-products:
+	pnpm install
+	npx tsx seed/seed-products.ts --remote
