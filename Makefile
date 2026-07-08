@@ -45,3 +45,15 @@ seed-users:
 remote-seed-users:
 	pnpm install
 	npx tsx seed/seed-users.ts --remote
+	
+seed-shop:
+	pnpm install
+	npx tsx seed/seed-shop.ts
+
+remote-seed-shop:
+	pnpm install
+	npx tsx seed/seed-shop.ts --remote
+
+seed-shops: seed-shop
+
+remote-seed-shops: remote-seed-shop
