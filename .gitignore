@@ -5,3 +5,4 @@ dist/
 *.local
 .pnpm-store/
 .wrangler/
+seed/images/

@@ -65,3 +65,11 @@ seed-products:
 remote-seed-products:
 	pnpm install
 	npx tsx seed/seed-products.ts --remote
+
+seed-product-images:
+	pnpm install
+	npx tsx seed/seed-product-images.ts
+
+remote-seed-product-images:
+	pnpm install
+	npx tsx seed/seed-product-images.ts --remote
