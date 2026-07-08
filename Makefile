@@ -1,4 +1,4 @@
-.PHONY: help dev migrate remote-migrate deploy
+.PHONY: help dev migrate remote-migrate deploy seed-users seed-shop seed-products seed-events seed-product-images
 
 MIGRATIONS := $(sort $(wildcard migrations/*.sql))
 
@@ -8,6 +8,8 @@ help:
 	@echo "  make migrate           Apply local D1 migrations"
 	@echo "  make remote-migrate    Apply remote D1 migrations"
 	@echo "  make deploy            Build and deploy app to Cloudflare Pages"
+	@echo "  make seed-events       Seed dev event in local D1"
+	@echo "  make remote-seed-events Seed dev event in remote D1"
 
 migrate:
 	pnpm install
@@ -73,3 +75,11 @@ seed-product-images:
 remote-seed-product-images:
 	pnpm install
 	npx tsx seed/seed-product-images.ts --remote
+
+seed-events:
+	pnpm install
+	npx tsx seed/seed-events.ts
+
+remote-seed-events:
+	pnpm install
+	npx tsx seed/seed-events.ts --remote

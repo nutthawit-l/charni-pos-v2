@@ -36,6 +36,28 @@ export function d1Rows<T>(result: unknown): T[] {
     return (result as { results?: T[] }).results ?? [];
 }
 
+export const COUNTRY_UTC_OFFSET_HOURS = {
+    Thailand: 7,
+    Singapore: 8,
+} as const;
+
+export type EventCountry = keyof typeof COUNTRY_UTC_OFFSET_HOURS;
+
+export function utcOffsetHours(country: EventCountry): number {
+    return COUNTRY_UTC_OFFSET_HOURS[country];
+}
+
+export function localToUtcIso(
+    localDate: string,
+    localTime: string,
+    country: EventCountry,
+): string {
+    const [y, m, d] = localDate.split('-').map(Number);
+    const [hh, mm] = localTime.split(':').map(Number);
+    const utcMs = Date.UTC(y, m - 1, d, hh - utcOffsetHours(country), mm, 0);
+    return new Date(utcMs).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
 export interface ProductSeedRow {
     originalUrl: string;
     name: string;
