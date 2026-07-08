@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "react-router dev",
     "dev:wrangler": "npx wrangler pages dev dist",
-    "build": "tsc -b && vite build",
+    "build": "react-router build",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler pages deploy dist",
