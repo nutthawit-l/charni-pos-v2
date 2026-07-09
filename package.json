@@ -15,13 +15,15 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
+    "@react-router/node": "^8.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router": "^8.1.0",
     "tailwind-merge": "^3.6.0",
-    "zustand": "^5.0.14"
+    "zustand": "^5.0.14",
+    "isbot": "^5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260613.1",
