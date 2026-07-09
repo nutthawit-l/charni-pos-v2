@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "react-router dev",
-    "dev:wrangler": "npx wrangler pages dev dist",
+    "dev:wrangler": "npx wrangler pages dev dist/client",
     "build": "react-router build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "pnpm build && wrangler pages deploy dist",
+    "deploy": "pnpm build && wrangler pages deploy dist/client",
     "test": "vitest run",
     "test:watch": "vitest"
   },
