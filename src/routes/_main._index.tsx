@@ -1,7 +1,46 @@
-export default function HomePage() {
+import type { Route } from './+types/_main._index';
+import { AppBar } from '../components/home/AppBar';
+import { HeroBanner } from '../components/home/HeroBanner';
+import { EventsSection } from '../components/home/EventsSection';
+import { NewEventButton } from '../components/home/NewEventButton';
+import type { EventSummary } from '../types/event';
+
+interface UserProfile {
+    id: number;
+    displayName: string;
+    avatarUrl: string | null;
+}
+
+export async function clientLoader() {
+    const [profileRes, eventsRes] = await Promise.all([
+        fetch('/api/users/profile', { credentials: 'include' }),
+        fetch('/api/events', { credentials: 'include' }),
+    ]);
+    
+    if (!profileRes.ok) {
+        throw new Response('Unauthorized', { status: profileRes.status });
+    }
+    if (!eventsRes.ok) {
+        throw new Response('Failed to fetch events', { status: eventsRes.status });
+    }
+    
+    const user = (await profileRes.json()) as UserProfile;
+    const events = (await eventsRes.json()) as EventSummary[];
+    
+    return { user, events };
+}
+
+clientLoader.hydrate = true as const;
+
+export default function HomePage({ loaderData }: Route.ComponentProps) {
+    const { user, events } = loaderData;
+
     return (
-        <div className="flex h-full items-center justify-center p-6">
-            <p className="text-on-surface">Home</p>
-        </div>
+        <>
+            <AppBar displayName={user.displayName} avatarUrl={user.avatarUrl} />
+            <HeroBanner />
+            <EventsSection events={events} />
+            <NewEventButton />
+        </>
     );
 }

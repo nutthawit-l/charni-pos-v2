@@ -32,6 +32,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
+export function HydrateFallback() {
+  return (
+    <div className="flex h-dvh items-center justify-center bg-surface">
+      <p className="text-on-surface-variant">Loading...</p>
+    </div>
+  );
+}
+
 export default function Root() {
     return <Outlet />;
 }
