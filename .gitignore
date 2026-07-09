@@ -6,3 +6,4 @@ dist/
 .pnpm-store/
 .wrangler/
 seed/images/
+.react-router/
