@@ -1,5 +1,14 @@
 import { Outlet, useMatches } from 'react-router';
+import type { Route } from './+types/_main';
 import { BottomNav } from '../components/layout/BottomNav';
+import { requireSession } from '../lib/require-session';
+
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+    const user = await requireSession(request);
+    return { user };
+}
+
+clientLoader.hydrate = true as const;
 
 export default function MainLayout() {
     const matches = useMatches();

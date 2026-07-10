@@ -13,7 +13,7 @@ export interface ApiContextData extends Record<string, unknown> {
 
 export const onRequest: PagesFunction<ApiEnv, never, ApiContextData> = async (context) => {
     const { pathname } = new URL(context.request.url);
-    if (pathname.startsWith('/api/images/')) {
+    if (pathname.startsWith('/api/images/') || pathname === '/api/auth/phone') {
         return await context.next();
     }
 

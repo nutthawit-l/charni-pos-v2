@@ -4,10 +4,40 @@ import { useNavigate } from 'react-router';
 import { OutlinedTextField } from '../store/OutlinedTextField';
 import { SocialLoginButton } from './SocialLoginButton';
 
-export function LoginPage() {
+interface LoginPageProps {
+    returnTo?: string;
+}
+
+export function LoginPage({ returnTo }: LoginPageProps) {
     const navigate = useNavigate();
     const [phone, setPhone] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isPending, setIsPending] = useState(false);
+
+    async function handleSignIn() {
+        setError(null);
+        setIsPending(true);
+        try {
+            const res = await fetch('/api/auth/phone', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, rememberMe }),
+            });
+            if (res.status === 401) {
+                setError('Phone number not registered');
+                return;
+            }
+            if (!res.ok) {
+                setError('Sign in failed');
+                return;
+            }
+            navigate(returnTo ?? '/');
+        } finally {
+            setIsPending(false);
+        }
+    }
 
     return (
         <div className="flex h-dvh justify-center bg-surface">
@@ -54,12 +84,18 @@ export function LoginPage() {
                         </label>
                     </div>
 
+                    {error && (
+                        <p className="mt-4 text-center text-sm text-red-600">{error}</p>
+                    )}
+
                     <div className="mt-6 flex justify-center">
                         <button
                             type="button"
-                            className="h-14 rounded-full bg-primary px-6 text-base font-medium text-on-primary"
+                            onClick={handleSignIn}
+                            disabled={isPending}
+                            className="h-14 rounded-full bg-primary px-6 text-base font-medium text-on-primary disabled:opacity-50"
                         >
-                            Sign in
+                            {isPending ? 'Signing in…' : 'Sign in'}
                         </button>
                     </div>
                 </div>
