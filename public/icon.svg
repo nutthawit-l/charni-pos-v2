@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Charni POS">
+  <rect width="512" height="512" fill="#6750A4"/>
+  <path
+    fill="#FFFFFF"
+    d="M 296 126
+       A 140 140 0 1 0 296 386
+       L 258 354
+       A 100 100 0 1 1 258 158
+       Z"
+  />
+</svg>
