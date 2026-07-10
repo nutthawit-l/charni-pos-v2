@@ -154,6 +154,7 @@ export default function StorePage({ loaderData }: Route.ComponentProps) {
                 hasChanges={hasChanges}
                 isSaving={isSaving}
                 onSave={handleSave}
+                onNewProduct={() => navigate('/store/new')}
             />
         </div>
     );
