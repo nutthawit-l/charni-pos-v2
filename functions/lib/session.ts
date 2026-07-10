@@ -1,6 +1,6 @@
 import type { D1Database } from "@cloudflare/workers-types";
 
-const SESSION_COOKIE = 'session_token';
+export const SESSION_COOKIE = 'session_token';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const THIRTY_DAYS_MS = 30 * ONE_DAY_MS;
 
@@ -70,4 +70,19 @@ export async function createSession(
 export function buildSessionCookie(token: string, expiresAt: string): string {
     const expires = new Date(expiresAt).toUTCString();
     return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Expires=${expires}`;
+}
+
+export function buildClearSessionCookie(): string {
+    return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+}
+
+export async function destroySession(
+    env: SessionEnv,
+    token: string,
+): Promise<void> {
+    await env.DB.prepare(
+        'DELETE FROM session WHERE id = ?',
+    )
+        .bind(token)
+        .run();
 }
