@@ -38,7 +38,7 @@ dev:
 	fi
 
 deploy:
-	pnpm deploy
+	pnpm run deploy
 
 seed-users:
 	pnpm install

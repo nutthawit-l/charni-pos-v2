@@ -131,7 +131,7 @@ charni-pos-v2/
 | `pnpm build`         | Production build                                 |
 | `pnpm preview`       | Preview production build locally                 |
 | `pnpm lint`          | Run ESLint                                       |
-| `pnpm deploy`        | Build and deploy to Cloudflare Pages             |
+| `pnpm run deploy`    | Build and deploy to Cloudflare Pages             |
 | `make dev`           | Vite + Wrangler in parallel via tmux             |
 | `make migrate`       | Apply local D1 migrations                        |
 | `make remote-migrate`| Apply remote D1 migrations                       |
