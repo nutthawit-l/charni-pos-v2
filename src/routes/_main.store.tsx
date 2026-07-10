@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useRevalidator } from 'react-router';
+import { useNavigate, useOutlet, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.store';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
 import { EventTitleHeader } from '../components/order/EventTitleHeader';
@@ -29,6 +29,7 @@ export async function clientLoader() {
 clientLoader.hydrate = true as const;
 
 export default function StorePage({ loaderData }: Route.ComponentProps) {
+    const outlet = useOutlet();
     const navigate = useNavigate();
     const { revalidate } = useRevalidator();
 
@@ -63,6 +64,8 @@ export default function StorePage({ loaderData }: Route.ComponentProps) {
             sortDirection === 'asc' ? a.price - b.price : b.price - a.price,
         );
     }, [loaderData, selectedCategoryId, sortDirection]);
+
+    if (outlet) return outlet;
 
     function handleIncrementStock(productId: number) {
         setStockDrafts((prev) => ({
