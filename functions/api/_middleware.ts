@@ -1,8 +1,9 @@
-import type { D1Database, PagesFunction } from "@cloudflare/workers-types";
+import type { D1Database, PagesFunction, R2Bucket } from "@cloudflare/workers-types";
 import { getSession } from '../lib/session';
 
 export interface ApiEnv {
     DB: D1Database;
+    IMAGES_BUCKET: R2Bucket;
 }
 
 export interface ApiContextData extends Record<string, unknown> {
@@ -10,6 +11,11 @@ export interface ApiContextData extends Record<string, unknown> {
 }
 
 export const onRequest: PagesFunction<ApiEnv, never, ApiContextData> = async (context) => {
+    const { pathname } = new URL(context.request.url);
+    if (pathname.startsWith('/api/images/')) {
+        return await context.next();
+    }
+
     const session = await getSession(context.request, context.env);
     if (!session) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
