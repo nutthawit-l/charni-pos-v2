@@ -8,6 +8,7 @@ import { ProductDetailActionBar } from '../components/store/ProductDetailActionB
 import { ProductDetailCategoryChips } from '../components/store/ProductDetailCategoryChips';
 import { ProductDetailHeader } from '../components/store/ProductDetailHeader';
 import { ProductImagePicker } from '../components/store/ProductImagePicker';
+import { normalizeImageUrl } from '../lib/image-url';
 import type { CategorySummary, ProductDetailResponse } from '../types/product';
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from '../types/product';
 
@@ -26,7 +27,7 @@ function productToDraft(product: ProductDetailResponse): ProductDraft {
         name: product.name,
         categoryId: product.categoryId,
         stock: String(product.stock),
-        imageUrl: product.imageUrl,
+        imageUrl: normalizeImageUrl(product.imageUrl),
         prices: Object.fromEntries(
             SUPPORTED_CURRENCIES.map((c) => [c, priceToFormValue(product.prices[c])]),
         ) as Record<CurrencyCode, string>,

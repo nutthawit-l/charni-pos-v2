@@ -1,3 +1,4 @@
+import { normalizeImageUrl } from '../../lib/image-url';
 import type { SoldProductSummary } from '../../types/order';
 
 interface SoldProductListItemProps {
@@ -11,7 +12,7 @@ export function SoldProductListItem({ product, currencyCode }: SoldProductListIt
     return (
         <li className="flex h-20 items-center gap-2 px-2">
             <img
-                src={product.imageUrl}
+                src={normalizeImageUrl(product.imageUrl)}
                 alt=""
                 className="h-16 w-16 shrink-0 rounded-lg bg-surface-container object-cover"
             />

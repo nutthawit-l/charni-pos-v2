@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { prepareImageForUpload } from '../../lib/compress-image';
+import { normalizeImageUrl } from '../../lib/image-url';
 import { cn } from '../../lib/utils';
 
 interface ProductImagePickerProps {
@@ -25,8 +27,9 @@ export function ProductImagePicker({
         setUploadError(null);
 
         try {
+            const prepared = await prepareImageForUpload(file);
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('file', prepared);
 
             const res = await fetch('/api/product-images', {
                 method: 'POST',
@@ -40,7 +43,7 @@ export function ProductImagePicker({
             }
 
             const data = (await res.json()) as { imageUrl: string };
-            onImageUrlChange(data.imageUrl);
+            onImageUrlChange(normalizeImageUrl(data.imageUrl));
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Upload failed';
             setUploadError(message);
@@ -63,7 +66,7 @@ export function ProductImagePicker({
             >
                 {imageUrl ? (
                     <img
-                        src={imageUrl}
+                        src={normalizeImageUrl(imageUrl)}
                         alt=""
                         className="h-full w-full object-cover"
                     />

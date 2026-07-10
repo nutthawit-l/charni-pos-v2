@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import { normalizeImageUrl } from '../../lib/image-url';
 import { useAppStore } from '../../stores/app-store';
 import type { ProductSummary } from '../../types/product';
 
@@ -15,7 +16,7 @@ export function ProductListItem({ product, currencyCode }: ProductListItemProps)
     return (
         <li className="flex h-20 items-center gap-2 px-2">
             <img
-                src={product.imageUrl}
+                src={normalizeImageUrl(product.imageUrl)}
                 alt=""
                 className="h-16 w-16 shrink-0 rounded-lg bg-surface-container object-cover"
             />
