@@ -4,6 +4,7 @@ import { StoreProductListItem } from './StoreProductListItem';
 interface StoreProductListProps {
     products: ProductSummary[];
     stockDrafts: Record<number, number>;
+    onSelectProduct: (productId: number) => void;
     onIncrementStock: (productId: number) => void;
     onDecrementStock: (productId: number) => void;
 }
@@ -11,6 +12,7 @@ interface StoreProductListProps {
 export function StoreProductList({
     products,
     stockDrafts,
+    onSelectProduct,
     onIncrementStock,
     onDecrementStock,
 }: StoreProductListProps) {
@@ -29,6 +31,7 @@ export function StoreProductList({
                     key={product.id}
                     product={product}
                     stock={stockDrafts[product.id]}
+                    onSelect={() => onSelectProduct(product.id)}
                     onIncrementStock={() => onIncrementStock(product.id)}
                     onDecrementStock={() => onDecrementStock(product.id)}
                 />

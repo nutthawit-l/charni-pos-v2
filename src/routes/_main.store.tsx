@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useRevalidator } from 'react-router';
+import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.store';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
 import { EventTitleHeader } from '../components/order/EventTitleHeader';
@@ -29,6 +29,7 @@ export async function clientLoader() {
 clientLoader.hydrate = true as const;
 
 export default function StorePage({ loaderData }: Route.ComponentProps) {
+    const navigate = useNavigate();
     const { revalidate } = useRevalidator();
 
     const [stockDrafts, setStockDrafts] = useState<Record<number, number>>({});
@@ -137,6 +138,7 @@ export default function StorePage({ loaderData }: Route.ComponentProps) {
                     <StoreProductList
                         products={filteredProducts}
                         stockDrafts={stockDrafts}
+                        onSelectProduct={(productId) => navigate(`/store/${productId}`)}
                         onIncrementStock={handleIncrementStock}
                         onDecrementStock={handleDecrementStock}
                     />
