@@ -7,6 +7,7 @@ describe('cn (smoke test)', () => {
     });
     
     it('handles conditional classes', () => {
-        expect(cn('base', false && 'hidden', 'extra')).toBe('base extra');
+        const includeHidden = false;
+        expect(cn('base', includeHidden && 'hidden', 'extra')).toBe('base extra');
     });
 });

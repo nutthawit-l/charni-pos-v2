@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.store.new';
 import { CreateCategoryModal } from '../components/store/CreateCategoryModal';
@@ -81,7 +81,8 @@ export default function NewProductPage({ loaderData }: Route.ComponentProps) {
     const { revalidate } = useRevalidator();
 
     const [draft, setDraft] = useState<ProductDraft>(emptyDraft);
-    const [categories, setCategories] = useState<CategorySummary[]>(loaderData?.categories ?? []);
+    const [extraCategories, setExtraCategories] = useState<CategorySummary[]>([]);
+    const [prevLoaderData, setPrevLoaderData] = useState(loaderData);
 
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
@@ -91,10 +92,21 @@ export default function NewProductPage({ loaderData }: Route.ComponentProps) {
     const [isCreatingCategory, setIsCreatingCategory] = useState(false);
     const [createCategoryError, setCreateCategoryError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!loaderData) return;
-        setCategories(loaderData.categories);
-    }, [loaderData]);
+    if (loaderData !== prevLoaderData) {
+        setPrevLoaderData(loaderData);
+        setExtraCategories([]);
+    }
+
+    const categories = useMemo(() => {
+        const base = loaderData?.categories ?? [];
+        const merged = [...base];
+        for (const extra of extraCategories) {
+            if (!merged.some((category) => category.id === extra.id)) {
+                merged.push(extra);
+            }
+        }
+        return merged.sort((a, b) => a.name.localeCompare(b.name));
+    }, [loaderData, extraCategories]);
 
     const canSave = useMemo(() => isDraftSavable(draft), [draft]);
 
@@ -196,7 +208,7 @@ export default function NewProductPage({ loaderData }: Route.ComponentProps) {
             }
 
             const category = (await res.json()) as CategorySummary;
-            setCategories((prev) => [...prev, category].sort((a, b) => a.name.localeCompare(b.name)));
+            setExtraCategories((prev) => [...prev, category]);
             updateDraft({ categoryId: category.id });
             setIsCreateCategoryModalOpen(false);
             setNewCategoryName('');

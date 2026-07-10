@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useOutlet, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.store';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
@@ -28,25 +28,32 @@ export async function clientLoader() {
 
 clientLoader.hydrate = true as const;
 
+function buildStockDrafts(data: ProductsResponse): Record<number, number> {
+    const drafts: Record<number, number> = {};
+    for (const product of data.products) {
+        drafts[product.id] = product.stock;
+    }
+    return drafts;
+}
+
 export default function StorePage({ loaderData }: Route.ComponentProps) {
     const outlet = useOutlet();
     const navigate = useNavigate();
     const { revalidate } = useRevalidator();
 
-    const [stockDrafts, setStockDrafts] = useState<Record<number, number>>({});
+    const [stockDrafts, setStockDrafts] = useState<Record<number, number>>(() =>
+        loaderData ? buildStockDrafts(loaderData) : {},
+    );
+    const [prevLoaderData, setPrevLoaderData] = useState(loaderData);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!loaderData) return;
-        const drafts: Record<number, number> = {};
-        for (const product of loaderData.products) {
-            drafts[product.id] = product.stock;
-        }
-        setStockDrafts(drafts);
-    }, [loaderData]);
+    if (loaderData !== prevLoaderData) {
+        setPrevLoaderData(loaderData);
+        setStockDrafts(loaderData ? buildStockDrafts(loaderData) : {});
+    }
 
     const hasChanges = useMemo(() => {
         if (!loaderData) return false;
