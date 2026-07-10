@@ -1,4 +1,5 @@
 import { Bell, Settings, User } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 interface AppBarProps {
     displayName: string;
@@ -6,6 +7,8 @@ interface AppBarProps {
 }
 
 export function AppBar({ displayName, avatarUrl }: AppBarProps) {
+    const navigate = useNavigate();
+
     return (
         <header className="flex items-center justify-between px-4 pt-4">
             <div className="flex items-center gap-3">
@@ -32,6 +35,7 @@ export function AppBar({ displayName, avatarUrl }: AppBarProps) {
                 </button>
                 <button
                     type="button"
+                    onClick={() => navigate('/settings')}
                     aria-label="Settings"
                     className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container"
                 >
