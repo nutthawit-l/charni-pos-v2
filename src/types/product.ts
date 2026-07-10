@@ -45,6 +45,16 @@ export interface ProductUpdateRequest {
     prices: Partial<Record<CurrencyCode, number>>;
 }
 
+export interface ProductCreateRequest {
+    name: string;
+    categoryId: number | null;
+    stock: number;
+    imageUrl: string;
+    prices: Partial<Record<CurrencyCode, number>>;
+}
+
+export type CreateProductResponse = { id: number };
+
 export interface CreateCategoryRequest {
     name: string;
 }
