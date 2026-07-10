@@ -6,7 +6,9 @@ interface OutlinedTextFieldProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
-    type?: 'text' | 'number';
+    type?: 'text' | 'number' | 'tel';
+    placeholder?: string;
+    alwaysFloatLabel?: boolean;
     disabled?: boolean;
     className?: string;
 }
@@ -16,12 +18,14 @@ export function OutlinedTextField({
     value,
     onChange,
     type = 'text',
+    placeholder,
+    alwaysFloatLabel = false,
     disabled = false,
     className,
 }: OutlinedTextFieldProps) {
     const [focused, setFocused] = useState(false);
     const hasValue = value.length > 0;
-    const floated = hasValue || focused;
+    const floated = alwaysFloatLabel || hasValue || focused;
 
     return (
         <div className={cn('relative', className)}>
@@ -51,6 +55,7 @@ export function OutlinedTextField({
                 <input
                     type={type}
                     value={value}
+                    placeholder={placeholder}
                     disabled={disabled}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
