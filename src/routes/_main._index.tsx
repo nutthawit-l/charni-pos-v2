@@ -39,7 +39,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
     const [selectedEvent, setSelectedEvent] = useState<EventSummary | null>(null);
 
     return (
-        <>
+        <div className="h-full overflow-y-auto no-scrollbar">
             <AppBar displayName={user.displayName} avatarUrl={user.avatarUrl} />
             <HeroBanner />
             <EventsSection events={events} onEventSelect={setSelectedEvent} />
@@ -51,6 +51,6 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
                     onClose={() => setSelectedEvent(null)}
                 />
             )}
-        </>
+        </div>
     );
 }
