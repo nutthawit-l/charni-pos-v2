@@ -5,6 +5,10 @@ interface ShopMemberRow {
     shop_id: number;
 }
 
+interface ShopRow {
+    name: string;
+}
+
 interface CategoryRow {
     id: number;
     name: string;
@@ -23,7 +27,15 @@ interface ProductRow {
 export const onRequestGet: PagesFunction<ApiEnv, never, ApiContextData> = async (context) => {
     try {
         const url = new URL(context.request.url);
-        const currencyCode = url.searchParams.get('currency')?.toUpperCase() ?? 'THB';
+        const currencyParam = url.searchParams.get("currency");
+        const currencyCode = (currencyParam ?? "SGD").toUpperCase();
+
+        if (!/^[A-Z]{3}$/.test(currencyCode)) {
+            return new Response(JSON.stringify({ error: "Invalid currency code" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         const member = await context.env.DB.prepare(
             "SELECT shop_id FROM shop_member WHERE user_id = ?",
@@ -32,10 +44,17 @@ export const onRequestGet: PagesFunction<ApiEnv, never, ApiContextData> = async 
             .first<ShopMemberRow>();
 
         if (!member) {
-            return new Response(JSON.stringify({ currencyCode, categories: [], products: [] }), {
-                headers: { "Content-Type": "application/json" },
-            });
+            return new Response(
+                JSON.stringify({ shopName: "", currencyCode, categories: [], products: [] }),
+                { headers: { "Content-Type": "application/json" } },
+            );
         }
+
+        const shop = await context.env.DB.prepare(
+            "SELECT name FROM shop WHERE id = ?",
+        )
+            .bind(member.shop_id)
+            .first<ShopRow>();
 
         const { results: categories } = await context.env.DB.prepare(
             "SELECT id, name FROM category WHERE shop_id = ? ORDER BY name",
@@ -57,6 +76,7 @@ export const onRequestGet: PagesFunction<ApiEnv, never, ApiContextData> = async 
 
         return new Response(
             JSON.stringify({
+                shopName: shop?.name ?? "",
                 currencyCode,
                 categories: categories ?? [],
                 products: products ?? [],

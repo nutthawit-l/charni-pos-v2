@@ -14,7 +14,12 @@ export interface ProductSummary {
 }
 
 export interface ProductsResponse {
+    shopName: string;
     currencyCode: string;
     categories: CategorySummary[];
     products: ProductSummary[];
+}
+
+export interface StockUpdateRequest {
+    items: { productId: number; stock: number }[];
 }
