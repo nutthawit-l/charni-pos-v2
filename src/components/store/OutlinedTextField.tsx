@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -18,13 +19,15 @@ export function OutlinedTextField({
     disabled = false,
     className,
 }: OutlinedTextFieldProps) {
+    const [focused, setFocused] = useState(false);
     const hasValue = value.length > 0;
+    const floated = hasValue || focused;
 
     return (
         <div className={cn('relative', className)}>
             <div
                 className={cn(
-                    'flex items-center rounded-lg border-2 px-4 py-3',
+                    'relative flex min-h-14 items-center rounded-lg border-2 px-4',
                     disabled
                         ? 'border-outline-variant/60'
                         : 'border-primary focus-within:border-primary',
@@ -32,8 +35,15 @@ export function OutlinedTextField({
             >
                 <label
                     className={cn(
-                        'pointer-events-none absolute left-3 bg-surface px-1 text-xs',
-                        disabled ? 'text-on-surface-variant' : 'text-primary',
+                        'pointer-events-none absolute left-3 bg-surface px-1 transition-all duration-150',
+                        floated
+                            ? '-top-2.5 text-xs'
+                            : 'top-1/2 -translate-y-1/2 text-base',
+                        disabled
+                            ? 'text-on-surface-variant'
+                            : floated
+                              ? 'text-primary'
+                              : 'text-on-surface-variant',
                     )}
                 >
                     {label}
@@ -42,8 +52,13 @@ export function OutlinedTextField({
                     type={type}
                     value={value}
                     disabled={disabled}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
                     onChange={(e) => onChange(e.target.value)}
-                    className="min-w-0 flex-1 bg-transparent pt-1 text-base text-on-surface outline-none disabled:text-on-surface-variant"
+                    className={cn(
+                        'min-w-0 flex-1 bg-transparent text-base text-on-surface outline-none disabled:text-on-surface-variant',
+                        floated ? 'pt-4 pb-2' : 'py-4',
+                    )}
                 />
                 {hasValue && !disabled && (
                     <button
