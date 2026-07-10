@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import type { Route } from './+types/_main._index';
 import { AppBar } from '../components/home/AppBar';
+import { EventActionModal } from '../components/home/EventActionModal';
 import { HeroBanner } from '../components/home/HeroBanner';
 import { EventsSection } from '../components/home/EventsSection';
 import { NewEventButton } from '../components/home/NewEventButton';
@@ -34,13 +36,21 @@ clientLoader.hydrate = true as const;
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
     const { user, events } = loaderData;
+    const [selectedEvent, setSelectedEvent] = useState<EventSummary | null>(null);
 
     return (
         <>
             <AppBar displayName={user.displayName} avatarUrl={user.avatarUrl} />
             <HeroBanner />
-            <EventsSection events={events} />
+            <EventsSection events={events} onEventSelect={setSelectedEvent} />
             <NewEventButton />
+            {selectedEvent && (
+                <EventActionModal
+                    event={selectedEvent}
+                    open
+                    onClose={() => setSelectedEvent(null)}
+                />
+            )}
         </>
     );
 }

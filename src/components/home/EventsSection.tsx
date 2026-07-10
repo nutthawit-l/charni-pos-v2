@@ -4,9 +4,10 @@ import { EventListItem } from './EventListItem';
 
 interface EventsSectionProps {
     events: EventSummary[];
+    onEventSelect: (event: EventSummary) => void;
 }
 
-export function EventsSection({ events }: EventsSectionProps) {
+export function EventsSection({ events, onEventSelect }: EventsSectionProps) {
     return (
         <section className="px-4 pt-6">
             <div className="mb-2 flex items-center justify-between">
@@ -18,7 +19,11 @@ export function EventsSection({ events }: EventsSectionProps) {
             ) : (
                 <ul>
                     {events.map((event) => (
-                        <EventListItem key={event.id} event={event} />
+                        <EventListItem
+                            key={event.id}
+                            event={event}
+                            onClick={() => onEventSelect(event)}
+                        />
                     ))}
                 </ul>
             )}
