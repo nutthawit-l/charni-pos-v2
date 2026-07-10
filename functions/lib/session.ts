@@ -1,6 +1,8 @@
 import type { D1Database } from "@cloudflare/workers-types";
 
 const SESSION_COOKIE = 'session_token';
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const THIRTY_DAYS_MS = 30 * ONE_DAY_MS;
 
 export interface SessionEnv {
     DB: D1Database;
@@ -8,6 +10,11 @@ export interface SessionEnv {
 
 export interface Session {
     userId: number;
+}
+
+export interface CreatedSession {
+    token: string;
+    expiresAt: string;
 }
 
 export function getCookie(cookieHeader: string | null, name: string): string | null {
@@ -39,4 +46,28 @@ export async function getSession(
     if (new Date(row.expires_at).getTime() < Date.now()) return null;
     
     return { userId: row.user_id };
+}
+
+export async function createSession(
+    env: SessionEnv,
+    userId: number,
+    rememberMe = false,
+): Promise<CreatedSession> {
+    const token = crypto.randomUUID();
+    const expiresAt = new Date(
+        Date.now() + (rememberMe ? THIRTY_DAYS_MS : ONE_DAY_MS),
+    ).toISOString();
+
+    await env.DB.prepare(
+        'INSERT INTO session (id, user_id, expires_at) VALUES (?, ?, ?)',
+    )
+        .bind(token, userId, expiresAt)
+        .run();
+
+    return { token, expiresAt };
+}
+
+export function buildSessionCookie(token: string, expiresAt: string): string {
+    const expires = new Date(expiresAt).toUTCString();
+    return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Expires=${expires}`;
 }
