@@ -106,3 +106,11 @@ export function readTomlVar(toml: string, key: string): string | null {
     const match = toml.match(new RegExp(`${key}\\s*=\\s*"([^"]*)"`));
     return match?.[1] ?? null;
 }
+
+export function normalizePublicUrl(url: string): string {
+    const trimmed = url.replace(/\/$/, '');
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+}

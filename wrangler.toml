@@ -12,5 +12,5 @@ binding = "IMAGES_BUCKET"
 bucket_name = "charnipos-v2-images"
 
 [vars]
-R2_PUBLIC_URL = "charni-pos-r2.ntwtech.com"
+R2_PUBLIC_URL = "https://charni-pos-r2.ntwtech.com"
 GOOGLE_CLIENT_ID = ""

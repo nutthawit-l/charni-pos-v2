@@ -3,6 +3,7 @@ import {
     d1Rows,
     envLabel,
     isRemote,
+    normalizePublicUrl,
     parseProductsCsv,
     readTomlVar,
     readWranglerToml,
@@ -43,7 +44,7 @@ function imageBaseUrl(): string {
     const toml = readWranglerToml();
     const url = readTomlVar(toml, 'R2_PUBLIC_URL');
     if (!url) throw new Error('R2_PUBLIC_URL is empty in wrangler.toml');
-    return url.replace(/\/$/, '');
+    return normalizePublicUrl(url);
 }
 
 function ensureCategories(
@@ -107,7 +108,11 @@ async function run() {
             );
             console.log(`   -> Inserted product "${p.name}"`);
         } else {
-            console.log(`   -> Product "${p.name}" already exists, skipping insert`);
+            d1Execute(
+                `UPDATE product SET image_url = '${sqlString(imageUrl)}'
+                 WHERE shop_id = ${shopId} AND name = '${sqlString(p.name)}'`,
+            );
+            console.log(`   -> Product "${p.name}" already exists, updated image_url`);
         }
 
         upsertPrice(shopId, p.name, 'THB', p.thb);

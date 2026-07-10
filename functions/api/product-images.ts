@@ -30,10 +30,18 @@ function jsonResponse(body: unknown, status = 200): Response {
     });
 }
 
+function normalizePublicUrl(url: string): string {
+    const trimmed = url.replace(/\/$/, "");
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+}
+
 function buildImageUrl(env: ApiEnv, key: string, requestUrl: string): string {
     const publicUrl = env.R2_PUBLIC_URL;
     if (publicUrl) {
-        return `${publicUrl.replace(/\/$/, "")}/${key}`;
+        return `${normalizePublicUrl(publicUrl)}/${key}`;
     }
     const origin = new URL(requestUrl).origin;
     return `${origin}/api/images/${key}`;
