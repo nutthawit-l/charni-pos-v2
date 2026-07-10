@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.order';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
+import { CheckoutConfirmationModal } from '../components/order/CheckoutConfirmationModal';
 import { OrderActionBar } from '../components/order/OrderActionBar';
 import { OrderHeader } from '../components/order/OrderHeader';
 import { ProductList } from '../components/order/ProductList';
@@ -37,12 +38,14 @@ clientLoader.hydrate = true as const;
 
 export default function OrderPage({ loaderData }: Route.ComponentProps) {
     const navigate = useNavigate();
+    const { revalidate } = useRevalidator();
     const activeEvent = useAppStore((s) => s.activeEvent);
     const quantities = useAppStore((s) => s.quantities);
     const clearCart = useAppStore((s) => s.clearCart);
 
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+    const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
@@ -50,6 +53,18 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
         () => Object.values(quantities).some((q) => q > 0),
         [quantities],
     );
+
+    const checkoutItems = useMemo(() => {
+        if (!loaderData) return [];
+        return loaderData.products
+            .filter((p) => (quantities[p.id] ?? 0) > 0)
+            .map((p) => ({
+                id: p.id,
+                name: p.name,
+                quantity: quantities[p.id],
+                price: p.price,
+            }));
+    }, [loaderData, quantities]);
 
     const filteredProducts = useMemo(() => {
         if (!loaderData) return [];
@@ -67,7 +82,23 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
         return <SelectEventFirstModal onDismiss={() => navigate('/')} />;
     }
 
-    async function handleCheckout() {
+    function openCheckoutModal() {
+        if (!hasItems || isCheckingOut) return;
+        setCheckoutError(null);
+        setIsCheckoutModalOpen(true);
+    }
+
+    function closeCheckoutModal() {
+        setIsCheckoutModalOpen(false);
+        setCheckoutError(null);
+    }
+
+    function handleCancelCheckout() {
+        clearCart();
+        closeCheckoutModal();
+    }
+
+    async function handleConfirmPayment() {
         if (!activeEvent || isCheckingOut) return;
 
         const items = Object.entries(quantities)
@@ -94,6 +125,8 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
             }
 
             clearCart();
+            closeCheckoutModal();
+            revalidate();
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Checkout failed';
             setCheckoutError(message);
@@ -126,9 +159,6 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
                         Loading products…
                     </p>
                 )}
-                {checkoutError && (
-                    <p className="px-4 py-4 text-center text-sm text-red-600">{checkoutError}</p>
-                )}
                 {loaderData && (
                     <ProductList
                         products={filteredProducts}
@@ -140,8 +170,20 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
                 hasItems={hasItems}
                 isCheckingOut={isCheckingOut}
                 onClear={clearCart}
-                onCheckout={handleCheckout}
+                onCheckout={openCheckoutModal}
             />
+            {loaderData && (
+                <CheckoutConfirmationModal
+                    open={isCheckoutModalOpen}
+                    items={checkoutItems}
+                    currencyCode={loaderData.currencyCode}
+                    isSubmitting={isCheckingOut}
+                    error={checkoutError}
+                    onConfirm={handleConfirmPayment}
+                    onCancel={handleCancelCheckout}
+                    onUpdateItems={closeCheckoutModal}
+                />
+            )}
         </div>
     );
 }

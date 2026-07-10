@@ -27,7 +27,7 @@ export function OrderActionBar({
                 disabled={!hasItems || isCheckingOut}
                 className="flex-1 rounded-full bg-primary px-6 py-3 text-sm font-medium text-on-primary disabled:opacity-40"
             >
-                {isCheckingOut ? 'Processing…' : 'Checkout'}
+                Checkout
             </button>
         </div>
     );
