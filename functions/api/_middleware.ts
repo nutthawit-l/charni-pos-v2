@@ -4,6 +4,7 @@ import { getSession } from '../lib/session';
 export interface ApiEnv {
     DB: D1Database;
     IMAGES_BUCKET: R2Bucket;
+    R2_PUBLIC_URL?: string;
 }
 
 export interface ApiContextData extends Record<string, unknown> {
