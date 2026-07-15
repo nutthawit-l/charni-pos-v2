@@ -1,12 +1,14 @@
-.PHONY: help dev migrate remote-migrate deploy seed-users seed-shop seed-products seed-events seed-product-images
+.PHONY: help dev migrate remote-migrate dump-remote deploy seed-users seed-shop seed-products seed-events seed-product-images
 
 MIGRATIONS := $(sort $(wildcard migrations/*.sql))
+DUMP_FILE := tmp/remote-dump-$(shell date +%Y-%m-%d).sql
 
 help:
 	@echo "Usage:"
 	@echo "  make dev               Run Vite and Wrangler in separate tmux panes"
 	@echo "  make migrate           Apply local D1 migrations"
 	@echo "  make remote-migrate    Apply remote D1 migrations"
+	@echo "  make dump-remote       Export remote D1 and replace local D1 with it"
 	@echo "  make deploy            Build and deploy app to Cloudflare Pages"
 	@echo "  make seed-events       Seed dev event in local D1"
 	@echo "  make remote-seed-events Seed dev event in remote D1"
@@ -24,6 +26,13 @@ remote-migrate:
 		echo "Applying $$f..."; \
 		npx wrangler d1 execute charnipos-v2-db --remote --file="$$f"; \
 	done
+
+dump-remote:
+	mkdir -p tmp
+	npx wrangler d1 export charnipos-v2-db --remote --output=$(DUMP_FILE) -y
+	rm -rf .wrangler/state/v3/d1/miniflare-D1DatabaseObject
+	npx wrangler d1 execute charnipos-v2-db --local --file=$(DUMP_FILE) -y
+	@echo "Local D1 replaced with remote dump ($(DUMP_FILE))"
 
 dev:
 	@if [ -n "$$TMUX" ]; then \

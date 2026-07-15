@@ -7,3 +7,4 @@ dist/
 .wrangler/
 seed/images/
 .react-router/
+tmp/
