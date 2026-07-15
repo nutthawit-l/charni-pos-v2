@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useOutlet, useRevalidator } from 'react-router';
 import type { Route } from './+types/_main.store';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
-import { EventTitleHeader } from '../components/order/EventTitleHeader';
+import { TitleHeader } from '../components/TitleHeader';
 import { SortBar, type SortDirection } from '../components/order/SortBar';
 import { StoreActionBar } from '../components/store/StoreActionBar';
 import { StoreProductList } from '../components/store/StoreProductList';
@@ -122,7 +122,7 @@ export default function StorePage({ loaderData }: Route.ComponentProps) {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            {loaderData && <EventTitleHeader eventName={loaderData.shopName} />}
+            {loaderData && <TitleHeader title={loaderData.shopName} />}
             {loaderData && (
                 <>
                     <CategoryFilterChips

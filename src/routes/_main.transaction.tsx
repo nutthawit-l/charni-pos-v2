@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/_main.transaction';
 import { HeroBanner } from '../components/home/HeroBanner';
-import { EventTitleHeader } from '../components/order/EventTitleHeader';
+import { TitleHeader } from '../components/TitleHeader';
 import { SelectEventFirstModal } from '../components/order/SelectEventFirstModal';
 import { OrderListItem } from '../components/transaction/OrderListItem';
 import { SoldProductListItem } from '../components/transaction/SoldProductListItem';
@@ -58,7 +58,7 @@ export default function TransactionPage({ loaderData }: Route.ComponentProps) {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <EventTitleHeader eventName={activeEvent.name} />
+            <TitleHeader title={activeEvent.name} />
             <HeroBanner />
             <TransactionFilterChips view={view} onViewChange={setView} />
             <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">

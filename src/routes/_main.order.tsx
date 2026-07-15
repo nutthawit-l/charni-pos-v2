@@ -4,7 +4,7 @@ import type { Route } from './+types/_main.order';
 import { CategoryFilterChips } from '../components/order/CategoryFilterChips';
 import { CheckoutConfirmationModal } from '../components/order/CheckoutConfirmationModal';
 import { OrderActionBar } from '../components/order/OrderActionBar';
-import { EventTitleHeader } from '../components/order/EventTitleHeader';
+import { TitleHeader } from '../components/TitleHeader';
 import { ProductList } from '../components/order/ProductList';
 import { SelectEventFirstModal } from '../components/order/SelectEventFirstModal';
 import { SortBar, type SortDirection } from '../components/order/SortBar';
@@ -137,7 +137,7 @@ export default function OrderPage({ loaderData }: Route.ComponentProps) {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <EventTitleHeader eventName={activeEvent.name} />
+            <TitleHeader title={activeEvent.name} />
             {loaderData && (
                 <>
                     <CategoryFilterChips
