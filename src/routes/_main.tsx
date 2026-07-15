@@ -17,7 +17,7 @@ export default function MainLayout() {
     );
 
     return (
-        <div className="flex h-dvh justify-center bg-surface">
+        <div className="flex justify-center">
             <div className="relative flex h-dvh w-full max-w-[400px] flex-col overflow-hidden bg-surface shadow-2xl">
                 <div
                     className={`flex min-h-0 flex-1 flex-col overflow-hidden${hideBottomNav ? '' : ' pb-20'}`}
