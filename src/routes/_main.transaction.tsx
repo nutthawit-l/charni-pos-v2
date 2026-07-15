@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/_main.transaction';
 import { HeroBanner } from '../components/home/HeroBanner';
@@ -12,6 +12,7 @@ import {
 } from '../components/transaction/TransactionFilterChips';
 import { useAppStore } from '../stores/app-store';
 import type { TransactionsResponse } from '../types/order';
+import { LeftDivider } from '../components/LeftDivider';
 
 export async function clientLoader() {
     const activeEvent = useAppStore.getState().activeEvent;
@@ -40,6 +41,19 @@ function formatOrderTime(createdAt: string): string {
     return new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+function dayKey(createdAt: string): string {
+    const d = new Date(createdAt);
+    // Local date bucket -- not UTC -- so evening orders stay on the correct day
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;  // e.g. "2026-07-15"
+}
+
+function formatDayLabel(createdAt: string): string {
+    return new Date(createdAt).toLocaleDateString([], { weekday: 'long' });
+}
+
 export default function TransactionPage({ loaderData }: Route.ComponentProps) {
     const navigate = useNavigate();
     const activeEvent = useAppStore((s) => s.activeEvent);
@@ -51,6 +65,41 @@ export default function TransactionPage({ loaderData }: Route.ComponentProps) {
         if (view === 'top10') return loaderData.products.slice(0, 10);
         return loaderData.products;
     }, [loaderData, view]);
+    
+    const orderDayGroups = useMemo(() => {
+        if (!loaderData) return [];
+        
+        const total = loaderData.orders.length;
+        let globalIdx = 0;
+        
+        const groups: { 
+            key: string; 
+            label: string; 
+            items: { order: (typeof loaderData.orders)[number]; orderNumber: number }[];
+        }[] = [];
+        
+        for (const order of loaderData.orders) {
+            const key = dayKey(order.createdAt);
+            const item = {
+                order,
+                orderNumber: total - globalIdx,
+            };
+            globalIdx += 1;
+
+            const last = groups[groups.length - 1];
+            if (last && last.key === key) {
+                last.items.push(item);
+            } else {
+                groups.push({
+                    key,
+                    label: formatDayLabel(order.createdAt),
+                    items: [item],
+                });
+            }
+        }
+        
+        return groups;
+    }, [loaderData]);
 
     if (!activeEvent) {
         return <SelectEventFirstModal onDismiss={() => navigate('/')} />;
@@ -79,15 +128,22 @@ export default function TransactionPage({ loaderData }: Route.ComponentProps) {
                 )}
                 {loaderData && view === 'orders' && loaderData.orders.length > 0 && (
                     <ul>
-                        {loaderData.orders.map((order, idx) => (
-                            <OrderListItem
-                                key={order.id}
-                                orderNumber={loaderData.orders.length - idx}
-                                time={formatOrderTime(order.createdAt)}
-                                itemCount={order.totalProductSold}
-                                totalIncome={order.totalIncome}
-                                currencyCode={loaderData.currencyCode}
-                            />
+                        {orderDayGroups.map((group) => (
+                            <Fragment key={group.key}>
+                                <li>
+                                    <LeftDivider label={group.label} />
+                                </li>
+                                {group.items.map(({ order, orderNumber }) => (
+                                    <OrderListItem 
+                                        key={order.id} 
+                                        orderNumber={orderNumber}
+                                        time={formatOrderTime(order.createdAt)}
+                                        itemCount={order.totalProductSold}
+                                        totalIncome={order.totalIncome}
+                                        currencyCode={loaderData.currencyCode}
+                                    />
+                                ))}
+                            </Fragment>
                         ))}
                     </ul>
                 )}
